@@ -44,7 +44,7 @@ function [soln, rands, found_soln, collab_depth] = MISTR(diffs,n_rands)
         
         %check if intersection step gave a solution
         if size(rawSoln{i},2) == tk
-            soln = rawSoln{1};
+            soln = rawSoln{i};
             found_soln = true;
             return;
         end 
