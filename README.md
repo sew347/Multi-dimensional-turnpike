@@ -1,4 +1,4 @@
-# Multi-dimensional-turnpike
+# Sparse-Multidimensional-PR
 This repository contains all code used in the final version of the paper http://personal.psu.edu/sew347/Sparse_Turnpike_in_Multiple_Dimensions.pdf (submitted). Code is written in MATLAB.
 
 The main file for running the program is "testIt.m". This calls the testing protocol "testHandler.m" to generate test data and call the main algorithm MISTR.m. Other files are helper functions for this algorithm.
