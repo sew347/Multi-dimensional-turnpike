@@ -18,10 +18,11 @@
 %rands = set of random vectors used in the MISTR algorithm.
 %found_soln = true if MISTR finds a collection of vectors with pairwise
 %difference set given by diffs, false otherwise
-%collab_depth = number of collaboration steps required to find a solution.
-%Equals n_rands if no solution is found.
+%collab_depth = number of collaboration steps required to find a solution; 
+%equals n_rands if no solution is found.
+%branch_total = total number of times collaboration search tree branches
 %--------------------------------------------------------------------------
-function [soln, rands, found_soln, collab_depth] = MISTR(diffs,n_rands)
+function [soln, rands, found_soln, collab_depth, branch_total] = MISTR(diffs,n_rands)
     n_diffs = size(diffs,2);
     D = size(diffs,1);
     K = size(diffs,2);
@@ -30,6 +31,7 @@ function [soln, rands, found_soln, collab_depth] = MISTR(diffs,n_rands)
     C = {};
     must_contain = {};
     collab_depth = 1;
+    branch_total = 0;
     rawSoln = cell(1,1);
     rands = cell(1,n_rands);
     %compute minimum sparsity required to generate distance set
@@ -60,7 +62,11 @@ function [soln, rands, found_soln, collab_depth] = MISTR(diffs,n_rands)
             U = rawSoln{i};
             ui_1 = u1{i};
             ui_max =u_max{i};
-            [soln, found_soln, C{i}, must_contain{i}] = collabStep(U, diffs, n_diffs, tk, u1_1, u1_max, ui_1,ui_max,C,must_contain,i);
+            [soln, found_soln, C{i}, must_contain{i},branch_ct] = collabStep(U, diffs, n_diffs, tk, u1_1, u1_max, ui_1,ui_max,C,must_contain,i);
+            if branch_ct < 0
+                error('oops');
+            end
+            branch_total = branch_ct + branch_total;
             if found_soln
                 return;
             end

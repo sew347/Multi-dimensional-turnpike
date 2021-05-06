@@ -27,12 +27,15 @@
 %C_i = cell array of collaborations computed as part of this step
 %must_contain_i = cell array of required vectors that must be contained in
 %future collaborations to be solution or parent thereof.
+%branch_ct = number of nodes explored
 %--------------------------------------------------------------------------
 
-function [soln, found_soln, C_i, must_contain_i] = collabStep(Ui, diffs, n_diffs, tk, u1_1, u1_max, ui_1, ui_max, C, must_contain,i)
+function [soln, found_soln, C_i, must_contain_i, branch_ct] = collabStep(Ui, diffs, n_diffs, tk, u1_1, u1_max, ui_1, ui_max, C, must_contain,i)
+    const = 2;
     D = size(diffs,1);
     C_i = {};
     must_contain_i = {};
+    branch_ct = -1;
     
     [U_int_pos,U_int_neg] = getValidCollaborations(Ui,must_contain{1}{1});
     
@@ -40,9 +43,10 @@ function [soln, found_soln, C_i, must_contain_i] = collabStep(Ui, diffs, n_diffs
         tU = Ui - U_int_pos(:,j);
         for h = 1:length(C{i-1})
             if i == 2 || containsAllVectors(must_contain{i-1}{h},tU)
+                branch_ct = branch_ct + 1;
                 tC = intersect(tU',C{i-1}{h}','rows').';
                 tC_size = size(tC,2);
-                if (tC_size >= tk) &&(tC_size <= 2*tk)
+                if (tC_size >= tk) &&(tC_size <= ceil(const*tk))
                     [found_soln, is_valid] = testIntersection(tC,diffs,n_diffs,tk);
                     if found_soln
                         soln = tC;
@@ -69,9 +73,10 @@ function [soln, found_soln, C_i, must_contain_i] = collabStep(Ui, diffs, n_diffs
         tU = flip(tU')';
         for h = 1:length(C{i-1})
             if i == 2 || containsAllVectors(must_contain{i-1}{h},tU)
+                branch_ct = branch_ct + 1;
                 tC = intersect(tU',C{i-1}{h}','rows').';
                 tC_size = size(tC,2);
-                if (tC_size >= tk) &&(tC_size <= 2*tk)
+                if (tC_size >= tk) &&(tC_size <= ceil(const*tk))
                     [found_soln, is_valid] = testIntersection(tC,diffs,n_diffs,tk);
                     if found_soln
                         soln = tC;
